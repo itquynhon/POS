@@ -1,0 +1,105 @@
+{
+  "app": "CafePOS",
+  "version": "1.0.0",
+  "entities": [
+    {
+      "name": "Category",
+      "fields": [
+        {"name": "name", "type": "string", "required": true},
+        {"name": "description", "type": "text"},
+        {"name": "picture", "type": "media"},
+        {"name": "order", "type": "integer", "default": 0}
+      ]
+    },
+    {
+      "name": "Product",
+      "fields": [
+        {"name": "name", "type": "string", "required": true},
+        {"name": "category", "type": "relation", "target": "Category", "relationType": "many-to-one"},
+        {"name": "price", "type": "decimal", "required": true},
+        {"name": "sku", "type": "string", "unique": true},
+        {"name": "is_active", "type": "boolean", "default": true},
+        {"name": "image", "type": "media"},
+        {"name": "cost", "type": "decimal"}
+      ]
+    },
+    {
+      "name": "Modifier",
+      "fields": [
+        {"name": "name", "type": "string", "required": true},
+        {"name": "price_delta", "type": "decimal"},
+        {"name": "type", "type": "enum", "values": ["size", "addon", "note"]},
+        {"name": "applicable_products", "type": "relation", "target": "Product", "relationType": "many-to-many"}
+      ]
+    },
+    {
+      "name": "Table",
+      "fields": [
+        {"name": "name", "type": "string", "required": true},
+        {"name": "capacity", "type": "integer"},
+        {"name": "is_available", "type": "boolean", "default": true}
+      ]
+    },
+    {
+      "name": "Staff",
+      "fields": [
+        {"name": "username", "type": "string", "unique": true},
+        {"name": "display_name", "type": "string"},
+        {"name": "role", "type": "enum", "values": ["admin", "cashier", "barista"]},
+        {"name": "pin", "type": "password"},
+        {"name": "last_login", "type": "datetime"}
+      ]
+    },
+    {
+      "name": "Order",
+      "fields": [
+        {"name": "order_number", "type": "string", "unique": true},
+        {"name": "table", "type": "relation", "target": "Table", "relationType": "many-to-one"},
+        {"name": "type", "type": "enum", "values": ["dine-in", "takeaway", "delivery"]},
+        {"name": "status", "type": "enum", "values": ["open", "in_progress", "closed", "cancelled"]},
+        {"name": "subtotal", "type": "decimal"},
+        {"name": "tax", "type": "decimal"},
+        {"name": "discount", "type": "decimal"},
+        {"name": "total", "type": "decimal"},
+        {"name": "created_by", "type": "relation", "target": "Staff", "relationType": "many-to-one"},
+        {"name": "created_at", "type": "datetime", "auto": true},
+        {"name": "closed_at", "type": "datetime"},
+        {"name": "order_items", "type": "relation", "target": "OrderItem", "relationType": "one-to-many"}
+      ]
+    },
+    {
+      "name": "OrderItem",
+      "fields": [
+        {"name": "order", "type": "relation", "target": "Order", "relationType": "many-to-one"},
+        {"name": "product", "type": "relation", "target": "Product", "relationType": "many-to-one"},
+        {"name": "product_name", "type": "string"},
+        {"name": "price", "type": "decimal"},
+        {"name": "quantity", "type": "integer", "default": 1},
+        {"name": "modifiers", "type": "json"},
+        {"name": "status", "type": "enum", "values": ["new", "in_kitchen", "served", "cancelled"]},
+        {"name": "notes", "type": "text"}
+      ]
+    },
+    {
+      "name": "InventoryItem",
+      "fields": [
+        {"name": "name", "type": "string"},
+        {"name": "sku", "type": "string", "unique": true},
+        {"name": "quantity", "type": "decimal"},
+        {"name": "unit", "type": "string"},
+        {"name": "reorder_point", "type": "decimal"}
+      ]
+    },
+    {
+      "name": "Shift",
+      "fields": [
+        {"name": "staff", "type": "relation", "target": "Staff", "relationType": "many-to-one"},
+        {"name": "start_time", "type": "datetime"},
+        {"name": "end_time", "type": "datetime"},
+        {"name": "cash_in_hand", "type": "decimal"},
+        {"name": "cash_out", "type": "decimal"},
+        {"name": "sales_total", "type": "decimal"}
+      ]
+    }
+  ]
+}
